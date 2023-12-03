@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <style>
+    body {
+      background-color: #222;
+      color: white;
+      font-family: 'Arial', sans-serif;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+      margin: 0;
+    }
+
+    #game-board {
+      display: grid;
+      grid-template-columns: repeat(3, 100px);
+      grid-gap: 10px;
+      margin-bottom: 20px;
+    }
+
+    .cell {
+      width: 100px;
+      height: 100px;
+      font-size: 2em;
+      text-align: center;
+      line-height: 100px;
+      cursor: pointer;
+      background-color: #333;
+      border: none;
+      color: white;
+    }
+
+    #choose-characters {
+      margin-bottom: 20px;
+    }
+
+    #reset-button {
+      padding: 10px;
+      font-size: 1em;
+      background-color: #3498db;
+      border: none;
+      color: white;
+      cursor: pointer;
+    }
+  </style>
+  <title>Tic Tac Toe</title>
+</head>
+<body>
+  <div id="choose-characters">
+    <label for="player">Choose your character:</label>
+    <select id="player">
+      <option value="X">X</option>
+      <option value="O">O</option>
+    </select>
+  </div>
+
+  <div id="game-board"></div>
+
+  <button id="reset-button">Reset Game</button>
+
+  <script>
+    let currentPlayer = 'X';
+    const cells = document.querySelectorAll('.cell');
+    const resetButton = document.getElementById('reset-button');
+    const chooseCharacters = document.getElementById('choose-characters');
+    const playerSelect = document.getElementById('player');
+    let gameBoard = ['', '', '', '', '', '', '', '', ''];
+    
+    function initializeGame() {
+      currentPlayer = playerSelect.value;
+      gameBoard = ['', '', '', '', '', '', '', '', ''];
+      renderBoard();
+    }
+
+    function renderBoard() {
+      const gameBoardElement = document.getElementById('game-board');
+      gameBoardElement.innerHTML = '';
+      gameBoard.forEach((cell, index) => {
+        const cellElement = document.createElement('div');
+        cellElement.className = 'cell';
+        cellElement.textContent = cell;
+        cellElement.addEventListener('click', () => cellClicked(index));
+        gameBoardElement.appendChild(cellElement);
+      });
+    }
+
+    function cellClicked(index) {
+      if (gameBoard[index] === '' && !checkWinner()) {
+        gameBoard[index] = currentPlayer;
+        renderBoard();
+        if (checkWinner()) {
+          alert(`Player ${currentPlayer} wins!`);
+        } else if (gameBoard.every(cell => cell !== '')) {
+          alert('It\'s a draw!');
+        } else {
+          currentPlayer = currentPlayer === 'X' ? 'O' : 'X';
+        }
+      }
+    }
+
+    function checkWinner() {
+      const winningCombinations = [
+        [0, 1, 2], [3, 4, 5], [6, 7, 8], // rows
+        [0, 3, 6], [1, 4, 7], [2, 5, 8], // columns
+        [0, 4, 8], [2, 4, 6]             // diagonals
+      ];
+
+      for (const combo of winningCombinations) {
+        const [a, b, c] = combo;
+        if (gameBoard[a] && gameBoard[a] === gameBoard[b] && gameBoard[a] === gameBoard[c]) {
+          return true;
+        }
+      }
+
+      return false;
+    }
+
+    function resetGame() {
+      initializeGame();
+    }
+
+    resetButton.addEventListener('click', resetGame);
+    chooseCharacters.addEventListener('change', initializeGame);
+
+    initializeGame();
+  </script>
+</body>
+</html>
